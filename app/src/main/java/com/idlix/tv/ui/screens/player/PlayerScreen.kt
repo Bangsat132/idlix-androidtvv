@@ -519,6 +519,7 @@ fun PlayerScreen(
                     PlayerView(ctx).apply {
                         player = exoPlayer
                         useController = false
+                        keepScreenOn = true
                         subtitleView?.apply {
                             setUserDefaultStyle()
                             setUserDefaultTextSize()

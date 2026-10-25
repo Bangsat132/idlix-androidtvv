@@ -32,19 +32,18 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-
-        ndk {
-            debugSymbolLevel = "FULL"
-        }
     }
 
     signingConfigs {
         create("release") {
-            val storeFilePath = localProperties.getProperty("storeFile") ?: "/Users/abdi/upload-keystore.jks"
+            // local.properties dulu, lalu env (CI), lalu path lama
+            val storeFilePath = localProperties.getProperty("storeFile")
+                ?: System.getenv("KEYSTORE_PATH")
+                ?: "/Users/abdi/upload-keystore.jks"
             storeFile = file(storeFilePath)
-            storePassword = localProperties.getProperty("storePassword")
-            keyAlias = localProperties.getProperty("keyAlias")
-            keyPassword = localProperties.getProperty("keyPassword")
+            storePassword = localProperties.getProperty("storePassword") ?: System.getenv("KEYSTORE_PASSWORD")
+            keyAlias = localProperties.getProperty("keyAlias") ?: System.getenv("KEY_ALIAS")
+            keyPassword = localProperties.getProperty("keyPassword") ?: System.getenv("KEY_PASSWORD")
         }
     }
 
@@ -57,9 +56,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            ndk {
-                debugSymbolLevel = "FULL"
-            }
         }
         debug {
             applicationIdSuffix = ".debug"
@@ -120,7 +116,6 @@ dependencies {
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.exoplayer.hls)
     implementation(libs.androidx.media3.ui)
-    implementation(libs.androidx.media3.session)
     implementation(libs.androidx.media3.common)
 
     // Network & Serialization
@@ -133,10 +128,6 @@ dependencies {
 
     // Coil for TV image loading
     implementation(libs.coil.compose)
-
-    // Local DB
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
 
     testImplementation(libs.junit)
 }
