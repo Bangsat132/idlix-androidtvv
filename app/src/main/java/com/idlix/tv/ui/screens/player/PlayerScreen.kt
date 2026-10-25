@@ -54,6 +54,7 @@ import androidx.media3.exoplayer.source.MergingMediaSource
 import androidx.media3.exoplayer.source.SingleSampleMediaSource
 import androidx.media3.exoplayer.text.TextOutput
 import androidx.media3.exoplayer.text.TextRenderer
+import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import androidx.tv.material3.Button
 import androidx.tv.material3.ButtonDefaults
@@ -144,6 +145,20 @@ fun PlayerScreen(
     var isPlaying by remember { mutableStateOf(true) }
     var isScrubbing by remember { mutableStateOf(false) }
     var userInteractionCount by remember { mutableIntStateOf(0) }
+
+    // Rasio tampilan video: Fit (letterbox) -> Zoom (isi layar, crop pinggir) -> Fill (regang)
+    val prefs = remember { context.getSharedPreferences("idlix_config", Context.MODE_PRIVATE) }
+    var resizeMode by remember {
+        mutableIntStateOf(prefs.getInt("player_resize_mode", AspectRatioFrameLayout.RESIZE_MODE_FIT))
+    }
+    val cycleAspect: () -> Unit = {
+        resizeMode = when (resizeMode) {
+            AspectRatioFrameLayout.RESIZE_MODE_FIT -> AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+            AspectRatioFrameLayout.RESIZE_MODE_ZOOM -> AspectRatioFrameLayout.RESIZE_MODE_FILL
+            else -> AspectRatioFrameLayout.RESIZE_MODE_FIT
+        }
+        prefs.edit().putInt("player_resize_mode", resizeMode).apply()
+    }
 
     val remainingMs = if (duration > 0L) (duration - currentPos).coerceAtLeast(0L) else Long.MAX_VALUE
     val isNearEnd = duration > 120_000L && remainingMs in 1L..90_000L
@@ -520,6 +535,7 @@ fun PlayerScreen(
                         player = exoPlayer
                         useController = false
                         keepScreenOn = true
+                        resizeMode = resizeMode
                         subtitleView?.apply {
                             setUserDefaultStyle()
                             setUserDefaultTextSize()
@@ -527,12 +543,19 @@ fun PlayerScreen(
                         }
                     }
                 },
+                update = { view -> view.resizeMode = resizeMode },
                 modifier = Modifier.fillMaxSize()
             )
 
             // D-Pad Player Controls
             TvPlayerControls(
                 title = resolved.title,
+                aspectMode = resizeMode,
+                onCycleAspect = {
+                    cycleAspect()
+                    showControls = true
+                    userInteractionCount++
+                },
                 isVisible = showControls && !uiState.isSubtitlePickerVisible,
                 isPlaying = isPlaying,
                 currentPosMs = currentPos,

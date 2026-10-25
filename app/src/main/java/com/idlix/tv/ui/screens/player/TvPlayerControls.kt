@@ -55,6 +55,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
+import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.compose.ui.unit.sp
 import androidx.tv.material3.Border
 import androidx.tv.material3.Button
@@ -79,6 +80,8 @@ fun TvPlayerControls(
     durationMs: Long,
     isSubtitleEnabled: Boolean,
     selectedSubtitleLabel: String? = null,
+    aspectMode: Int = AspectRatioFrameLayout.RESIZE_MODE_FIT,
+    onCycleAspect: () -> Unit = {},
     onPlayPauseClick: () -> Unit,
     onSeekBackward: () -> Unit,
     onSeekForward: () -> Unit,
@@ -503,6 +506,41 @@ fun TvPlayerControls(
                         }
                     }
 
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                    // Aspect ratio button
+                    val aspectLabel = when (aspectMode) {
+                        AspectRatioFrameLayout.RESIZE_MODE_ZOOM -> stringResource(R.string.aspect_zoom)
+                        AspectRatioFrameLayout.RESIZE_MODE_FILL -> stringResource(R.string.aspect_fill)
+                        else -> stringResource(R.string.aspect_fit)
+                    }
+                    Button(
+                        onClick = {
+                            onCycleAspect()
+                            onUserInteraction?.invoke()
+                        },
+                        colors = ButtonDefaults.colors(
+                            containerColor = if (aspectMode == AspectRatioFrameLayout.RESIZE_MODE_FIT) NetflixDarkCard else NetflixRed,
+                            contentColor = NetflixWhite,
+                            focusedContainerColor = NetflixWhite,
+                            focusedContentColor = Color.Black
+                        ),
+                        shape = ButtonDefaults.shape(shape = RoundedCornerShape(8.dp)),
+                        scale = ButtonDefaults.scale(focusedScale = 1.08f),
+                        border = ButtonDefaults.border(
+                            focusedBorder = Border(BorderStroke(2.dp, NetflixWhite))
+                        ),
+                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
+                    ) {
+                        Text(
+                            text = "Aspect: $aspectLabel",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
                     // Subtitle Picker Button
                     Button(
                         onClick = {
@@ -546,6 +584,7 @@ fun TvPlayerControls(
                                 fontWeight = FontWeight.Bold
                             )
                         }
+                    }
                     }
                 }
             }

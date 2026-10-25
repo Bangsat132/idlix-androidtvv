@@ -90,6 +90,9 @@
     <string name="subdl_quota_error">SubDL rejected: status false or quota exhausted</string>
     <string name="subdl_invalid_http">SubDL responded HTTP %d (Invalid key)</string>
     <string name="subdl_failed_error">Failed connecting to SubDL: %s</string>
+    <string name="aspect_fit">Fit</string>
+    <string name="aspect_zoom">Zoom</string>
+    <string name="aspect_fill">Fill</string>
     <string name="seek_mode">SEEK MODE</string>
     <string name="press_ok_to_play">Press OK to play</string>
     <string name="jumping_to">Jumping to %s…</string>
