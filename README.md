@@ -111,8 +111,7 @@ Tersedia dua opsi pemasangan sesuai kebutuhan Anda:
 
 ---
 
-## 🔒 Privasi & Keamanan
+##  Privasi & Keamanan
 
 * Tidak menyimpan data pribadi atau kredensial pengguna di server manapun.
-* Berkas konfigurasi sensitif dilindungi melalui `.gitignore`.
 * Aplikasi ini dibuat untuk keperluan riset dan edukasi arsitektur Leanback Android TV dan pemutaran media streaming HLS.
